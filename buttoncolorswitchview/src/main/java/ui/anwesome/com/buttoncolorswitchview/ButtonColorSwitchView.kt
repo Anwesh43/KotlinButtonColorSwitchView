@@ -54,6 +54,7 @@ class ButtonColorSwitchView(ctx:Context):View(ctx) {
         }
     }
     data class ButtonColorSwitch(var i:Int, var text:String, var x:Float, var y:Float, var w:Float, var h:Float) {
+        val state = ButtonColorSwitchState()
         fun draw(canvas:Canvas,paint:Paint) {
             var darkColorRGB:Array<Int> = arrayOf(38,50,56)
             var whiteColorRGB:Array<Int> = arrayOf(255,255,255)
@@ -62,22 +63,26 @@ class ButtonColorSwitchView(ctx:Context):View(ctx) {
             canvas.save()
             canvas.translate(x,y)
             paint.style = Paint.Style.FILL
-            paint.color = getColorWithScale(darkColorRGB,whiteColorRGB,0f)
+            paint.color = getColorWithScale(darkColorRGB, whiteColorRGB, state.scale)
             canvas.drawRoundRect(RectF(-w/2,-h/2,w/2,h/2),r,r,paint)
-            paint.color = getColorWithScale(whiteColorRGB,darkColorRGB,0f)
+            paint.color = getColorWithScale(whiteColorRGB, darkColorRGB, state.scale)
             paint.textSize = h/4
             canvas.drawText(text,-paint.measureText(text)/2,h/8,paint)
             paint.strokeWidth = Math.min(w,h)/30
             paint.style = Paint.Style.STROKE
-            paint.color = getColorWithScale(blueColorRGB, darkColorRGB)
+            paint.color = getColorWithScale(blueColorRGB, darkColorRGB, state.scale)
             canvas.drawRoundRect(RectF(-w/2,-h/2,w/2,h/2),r,r,paint)
             canvas.restore()
         }
-        fun update(stopcb:(Float)->Unit) {
-
+        fun update(stopcb:(Int)->Unit) {
+            state.update {
+                stopcb(i)
+            }
         }
         fun startUpdating(startcb:()->Unit) {
-
+            state.startUpdating {
+                startcb()
+            }
         }
     }
     data class ButtonColorSwitchState(var scale:Float = 0f,var dir:Float = 0f,var prevScale:Float = 0f) {
