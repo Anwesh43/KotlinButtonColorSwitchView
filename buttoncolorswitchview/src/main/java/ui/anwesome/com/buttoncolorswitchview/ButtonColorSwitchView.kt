@@ -3,6 +3,7 @@ package ui.anwesome.com.buttoncolorswitchview
 /**
  * Created by anweshmishra on 07/02/18.
  */
+import android.app.Activity
 import android.graphics.*
 import android.content.*
 import android.view.*
@@ -176,6 +177,13 @@ class ButtonColorSwitchView(ctx:Context,var texts: Array<String>):View(ctx) {
             container?.handleTap(x,y,{
                 animator.start()
             })
+        }
+    }
+    companion object {
+        fun create(activity:Activity, texts:Array<String>):ButtonColorSwitchView {
+            val view = ButtonColorSwitchView(activity, texts)
+            activity.setContentView(view)
+            return view
         }
     }
 }
