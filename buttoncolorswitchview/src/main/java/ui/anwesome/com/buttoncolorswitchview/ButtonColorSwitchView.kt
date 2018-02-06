@@ -6,6 +6,7 @@ package ui.anwesome.com.buttoncolorswitchview
 import android.graphics.*
 import android.content.*
 import android.view.*
+import java.util.concurrent.ConcurrentLinkedQueue
 
 
 fun getColorWithScale(target:Array<Int>,source:Array<Int>,scale:Float):Int {
@@ -84,6 +85,7 @@ class ButtonColorSwitchView(ctx:Context):View(ctx) {
                 startcb()
             }
         }
+        fun handleTap(x:Float,y:Float):Boolean = x>=this.x - w/2 && x <= this.x + w/2 && y >= this.y - h/2 && y <= this.y + h/2
     }
     data class ButtonColorSwitchState(var scale:Float = 0f,var dir:Float = 0f,var prevScale:Float = 0f) {
         fun update(stopcb: ()->Unit) {
@@ -106,4 +108,50 @@ class ButtonColorSwitchView(ctx:Context):View(ctx) {
             }
         }
     }
+    data class ButtonColorSwitchContainer(var w:Float,var h:Float,var texts:Array<String>) {
+        val buttons:ConcurrentLinkedQueue<ButtonColorSwitch> = ConcurrentLinkedQueue()
+        var prev:ButtonColorSwitch ?= null
+        var curr:ButtonColorSwitch ?= null
+        init {
+            if(texts.size > 0) {
+                val gap = w/(texts.size)
+                var i = 0
+                var x = gap/2
+                val y = h/2
+                texts.forEach {
+                    val yOffset = (h/40)*(1-2*(i%2))
+                    buttons.add(ButtonColorSwitch(i,it,x,y+yOffset,gap,h/20))
+                    x += gap
+                    i++
+                }
+            }
+        }
+        fun draw(canvas:Canvas,paint:Paint) {
+            buttons.forEach {
+                it.draw(canvas, paint)
+            }
+        }
+        fun update(stopcb:(Int) ->  Unit) {
+            prev?.update {
+
+            }
+            curr?.update{
+                prev = curr
+                curr = null
+                stopcb(it)
+            }
+        }
+        fun handleTap(x:Float,y:Float,startcb:()->Unit) {
+            buttons.forEach { button ->
+                if(button.handleTap(x,y)) {
+                    curr =  button
+                    curr?.startUpdating(startcb)
+                    prev?.startUpdating {
+
+                    }
+                    return
+                }
+            }
+        }
+     }
 }
