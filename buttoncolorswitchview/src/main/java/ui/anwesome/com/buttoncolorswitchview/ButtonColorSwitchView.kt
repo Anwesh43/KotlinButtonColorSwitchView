@@ -20,6 +20,10 @@ fun getColorWithScale(target:Array<Int>,source:Array<Int>,scale:Float):Int {
 class ButtonColorSwitchView(ctx:Context,var texts: Array<String>):View(ctx) {
     val paint:Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val renderer = ButtonColorSwitchRenderer(this)
+    var buttonSelectionListener:ButtonSwitchListener?=null
+    fun addButtonSwitchListener(onSelectionListener: (String) -> Unit) {
+        buttonSelectionListener = ButtonSwitchListener(onSelectionListener)
+    }
     override fun onDraw(canvas:Canvas) {
         renderer.render(canvas,paint)
     }
@@ -169,7 +173,9 @@ class ButtonColorSwitchView(ctx:Context,var texts: Array<String>):View(ctx) {
             container?.draw(canvas,paint)
             time++
             animator.animate {
-                container?.update {
+                container?.update { i ->
+                    var text = view.texts[i]
+                    view.buttonSelectionListener?.onSelectionListener?.invoke(text)
                     animator.stop()
                 }
             }
@@ -180,6 +186,7 @@ class ButtonColorSwitchView(ctx:Context,var texts: Array<String>):View(ctx) {
             })
         }
     }
+    data class ButtonSwitchListener(var onSelectionListener:(String)->Unit)
     companion object {
         fun create(activity:Activity, texts:Array<String>):ButtonColorSwitchView {
             val view = ButtonColorSwitchView(activity, texts)
