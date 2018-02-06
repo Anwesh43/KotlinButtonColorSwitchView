@@ -69,7 +69,7 @@ class ButtonColorSwitchView(ctx:Context,var texts: Array<String>):View(ctx) {
             paint.color = getColorWithScale(darkColorRGB, whiteColorRGB, state.scale)
             canvas.drawRoundRect(RectF(-w/2,-h/2,w/2,h/2),r,r,paint)
             paint.color = getColorWithScale(whiteColorRGB, darkColorRGB, state.scale)
-            paint.textSize = h/4
+            paint.textSize = h/2
             canvas.drawText(text,-paint.measureText(text)/2,h/8,paint)
             paint.strokeWidth = Math.min(w,h)/30
             paint.style = Paint.Style.STROKE
