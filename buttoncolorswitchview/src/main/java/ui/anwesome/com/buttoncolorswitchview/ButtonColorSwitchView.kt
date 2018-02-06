@@ -80,4 +80,25 @@ class ButtonColorSwitchView(ctx:Context):View(ctx) {
 
         }
     }
+    data class ButtonColorSwitchState(var scale:Float = 0f,var dir:Float = 0f,var prevScale:Float = 0f) {
+        fun update(stopcb: ()->Unit) {
+            scale += 0.1f*dir
+            if(Math.abs(scale - prevScale) > 1) {
+                scale = prevScale + dir
+                dir = 0f
+                prevScale = scale
+                if(prevScale == 1f) {
+                    stopcb()
+                }
+            }
+        }
+        fun startUpdating(startcb: ()->Unit) {
+            if(dir == 0f) {
+                dir = 1f - 2*scale
+                if(prevScale == 0f) {
+                    startcb()
+                }
+            }
+        }
+    }
 }
