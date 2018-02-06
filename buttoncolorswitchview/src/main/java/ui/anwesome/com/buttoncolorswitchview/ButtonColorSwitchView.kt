@@ -16,7 +16,7 @@ fun getColorWithScale(target:Array<Int>,source:Array<Int>,scale:Float):Int {
     return Color.rgb(getColorPartAtIndex(0), getColorPartAtIndex(1), getColorPartAtIndex(2))
 }
 
-class ButtonColorSwitchView(ctx:Context):View(ctx) {
+class ButtonColorSwitchView(ctx:Context,var texts: Array<String>):View(ctx) {
     val paint:Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     override fun onDraw(canvas:Canvas) {
 
@@ -153,5 +153,29 @@ class ButtonColorSwitchView(ctx:Context):View(ctx) {
                 }
             }
         }
-     }
+    }
+    data class ButtonColorSwitchRenderer(var view:ButtonColorSwitchView, var time:Int = 0) {
+        val animator = Animator(view)
+        var container:ButtonColorSwitchContainer ?= null
+        fun render(canvas:Canvas, paint:Paint) {
+            if(time == 0) {
+                val w = canvas.width.toFloat()
+                val h = canvas.height.toFloat()
+                container = ButtonColorSwitchContainer(w,h,view.texts)
+            }
+            canvas.drawColor(Color.parseColor("#212121"))
+            container?.draw(canvas,paint)
+            time++
+            animator.animate {
+                container?.update {
+                    animator.stop()
+                }
+            }
+        }
+        fun handleTap(x:Float,y:Float) {
+            container?.handleTap(x,y,{
+                animator.start()
+            })
+        }
+    }
 }
